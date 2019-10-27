@@ -7,19 +7,19 @@
 #include "LList.h"
 
 char load[15];
-char buffer[1000];
+char buffer[20000];
 
 char convert(char a)
 {
     if(a >= 97)
         return a;
-    return a+32;
+    return a + 32;
 }
 
 int strlenth(char *array)
 {
     int i = 0;
-    for(int j = 0; j < 10; j ++)
+    for(int j = 0; j < 15; j ++)
     {
         if(array[j] != ' ')
         {
@@ -32,12 +32,12 @@ int strlenth(char *array)
 void printLList(struct Node *head)
 {
     struct Node* current = head;
-    char buffer[3];
+    char buffer[5];
     while(current != NULL)
     {
         write(STDOUT_FILENO, current->name, 15);
-        buffer = sprintf("%i\n", current->count);
-        write(STDOUT_FILENO, buffer, 3);
+        int check = sprintf(buffer, ", %i\n", current->count);
+        write(STDOUT_FILENO, buffer, 5);
         current = current->next;
     }
 }
@@ -98,12 +98,12 @@ int main(int argc, char *argv[])
 {
      struct Node *head;
      head = LLnode("!DeFaUt!", 0, NULL);
-     resetarray(buffer, 1000);
+     resetarray(buffer, 20000);
      resetarray(load, 15);
      int fd = open(argv[1], O_RDONLY);
-     read(fd, buffer, 1000);
+     read(fd, buffer, 20000);
      int count = 0;
-     for(int k = 0; k < 1000; k ++)
+     for(int k = 0; k < 20000; k ++)
      {
 
         if(buffer[k] != ' ')// right now is not the space
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
                     count ++;
                  }
             }
-        }   
+        }
         else// right now is the space,代表要么一个单词结束了， 或者还未开始是前面的空格
         {
             if(*load != ' ')
