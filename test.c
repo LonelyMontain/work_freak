@@ -1,54 +1,13 @@
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include "LList.h"
 
-char load[15];
-char buffer[20000];
+char load[300];
+char buffer[2000000];
 
-char convert(char a)
+char convertToSmall(char a)
 {
     if(a >= 97)
         return a;
     return a + 32;
-}
-
-int strlenth(char *array)
-{
-    int i = 0;
-    for(int j = 0; j < 15; j ++)
-    {
-        if(array[j] != ' ')
-        {
-            i ++;
-        }
-    }
-    return i;
-}
-
-void printLList(struct Node *head)
-{
-    struct Node* current = head;
-    char buffer[5];
-    while(current != NULL)
-    {
-        write(STDOUT_FILENO, current->name, 15);
-        int check = sprintf(buffer, ", %i\n", current->count);
-        write(STDOUT_FILENO, buffer, 5);
-        current = current->next;
-    }
-}
-
-void readstr(char * array, int length)
-{
-    for(int j = 0; j < length; j ++)
-    {
-        printf("%c", array[j]);
-    }
-    printf("\n");
 }
 
 void resetarray(char * array, int length)
@@ -57,7 +16,102 @@ void resetarray(char * array, int length)
     {
         array[i] = ' ';
     }
-    
+}
+
+char* convertToChar(int a, char *buffer)
+{
+    buffer = (char*)malloc(5*sizeof(char));
+    resetarray(buffer,5);
+    int copy = a;
+    while(a > 0)
+    {
+        if(a == 0)
+        {
+            break;
+        }
+        for(int i = 0; i < 5; i ++)
+        {
+            if(buffer[i] == ' ')
+            {
+                buffer[i] = copy % 10 + 48;
+                a /= 10;
+                copy = a;
+                i = 10;
+            }
+        }
+    }
+
+    char *result;
+    result = (char*)malloc(5*sizeof(char));
+    resetarray(result,5);
+
+    for (int i = 0; i < 5; i++)
+    {
+        if(buffer[i] == ' ')
+        {
+            continue;
+        }
+        result[4-i] = buffer[i];
+    }
+
+    int flag = -1;
+    for (int i = 0; i < 5; i++)
+    {
+        if(result[i] == ' ')
+        {
+            continue;
+        }
+        else
+        {
+            if(flag == -1)
+            {
+                flag = i;
+                buffer[i-flag] = result[i];
+            }
+            else
+            {
+                buffer[i-flag] = result[i];
+            }
+        }
+     }// buffer now is 200
+
+     return buffer;
+}
+
+int strlenth(char *array)
+{
+    int i = 0;
+    for(int j = 0; j < 10; j ++)
+    {
+        if(array[j] != ' ')
+        {
+            i ++;
+            printf("%c", array[j]);
+        }
+    }
+    return i;
+}
+
+void readNode(struct Node *current)
+{
+    int count = current->count;
+    char *buffer;
+    char split[] = {'\n'};
+    write(STDOUT_FILENO, current->name, 20);
+    buffer = convertToChar(current->count, buffer);
+    write(STDOUT_FILENO, buffer, sizeof(buffer));
+    write(STDOUT_FILENO, split, sizeof(split));
+
+}
+
+void printLList(struct Node *head)
+{
+    struct Node* current = head;
+    while(current != NULL)
+    {
+        readNode(current);
+        current = current->next;
+    }
 }
 
 struct Node* checkExist(struct Node *head, char *name)
@@ -75,6 +129,7 @@ struct Node* checkExist(struct Node *head, char *name)
     struct Node *newNode;
     newNode = LLnode(name, 1, NULL);
     current->next = newNode;
+    //printf("current name is:%s\n", current->name);
     return head;
 }
 
@@ -98,12 +153,12 @@ int main(int argc, char *argv[])
 {
      struct Node *head;
      head = LLnode("!DeFaUt!", 0, NULL);
-     resetarray(buffer, 20000);
-     resetarray(load, 15);
+     resetarray(buffer, 2000000);
+     resetarray(load, 300);
      int fd = open(argv[1], O_RDONLY);
-     read(fd, buffer, 20000);
+     read(fd, buffer, 2000000);
      int count = 0;
-     for(int k = 0; k < 20000; k ++)
+     for(int k = 0; k < 2000000; k ++)
      {
 
         if(buffer[k] != ' ')// right now is not the space
@@ -112,7 +167,7 @@ int main(int argc, char *argv[])
             {
                 if(*(load+count) == ' ')
                 {
-                    *(load + count) = convert(buffer[k]);
+                    *(load + count) = convertToSmall(buffer[k]);
                     count ++;
                  }
             }
@@ -122,7 +177,7 @@ int main(int argc, char *argv[])
             if(*load != ' ')
             {
                 head = updateList(head, load);
-                resetarray(load, 15);
+                resetarray(load, 300);
                 count = 0;
             }
         }
