@@ -33,8 +33,8 @@ int strlenth(char *array)
 
 char* convertToChar(int a, char *buffer)
 {
-    buffer = (char*)malloc(5*sizeof(char));
-    resetarray(buffer,5);
+    buffer = (char*)malloc(10*sizeof(char));
+    resetarray(buffer,10);
     int copy = a;
     while(a > 0)
     {
@@ -42,7 +42,7 @@ char* convertToChar(int a, char *buffer)
         {
             break;
         }
-        for(int i = 0; i < 5; i ++)
+        for(int i = 0; i < 10; i ++)
         {
             if(buffer[i] == ' ')
             {
@@ -55,20 +55,20 @@ char* convertToChar(int a, char *buffer)
     }
 
     char *result;
-    result = (char*)malloc(5*sizeof(char));
-    resetarray(result,5);
+    result = (char*)malloc(10*sizeof(char));
+    resetarray(result,10);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 10; i++)
     {
         if(buffer[i] == ' ')
         {
             continue;
         }
-        result[4-i] = buffer[i];
+        result[9-i] = buffer[i];
     }
 
     int flag = -1;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 10; i++)
     {
         if(result[i] == ' ')
         {
@@ -88,11 +88,11 @@ char* convertToChar(int a, char *buffer)
         }
      }// buffer now is 200
      char *r2;
-     r2 = (char*)malloc(5*sizeof(char));
-     resetarray(r2,5);
+     r2 = (char*)malloc(10*sizeof(char));
+     resetarray(r2,10);
      //printf("buffer len is: %i", strlenth(buffer));
 
-     int toleft = 5 - strlenth(buffer);
+     int toleft = 10 - strlenth(buffer);
      
      if(toleft > 0)
      {
@@ -117,7 +117,7 @@ void readNode(struct Node *current)
     write(STDOUT_FILENO, current->name, 20);
     write(STDOUT_FILENO, is, sizeof(is));
     buffer = convertToChar(current->count, buffer);
-    write(STDOUT_FILENO, buffer, 5);
+    write(STDOUT_FILENO, buffer, 10);
     write(STDOUT_FILENO, enter, sizeof(enter));
 }
 
@@ -215,12 +215,14 @@ int main(int argc, char *argv[])
              read_num =read(fd, buffer, 600000);
           }
          resetarray(buffer, 600000);
+         resetarray(load, 20);
+         printf("done with file: %s\n", argv[argc-filenum]);
          filenum --;
          close(fd);
      }
              
     printLList(head);
-    printf("argc is: %i\n", argc);
+    printf("total file is: %i\n", argc-1);
     printf("done\n");
      return 0;
 }
